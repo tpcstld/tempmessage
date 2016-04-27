@@ -44,6 +44,13 @@ class MessageHandler(webapp2.RequestHandler):
 class DisplayHandler(webapp2.RequestHandler):
 
     def get(self, key):
+        user_agent = self.request.headers['User-Agent']
+
+        # Don't exhaust the message if it's just Skype looking for a preview.
+        if "SkypeUriPreview" in user_agent:
+            self.response.write("Skype is not allowed to see the message.")
+            return
+
         message = Message.get_by_id(int(key))
         if message:
             self.response.write(message.content)
